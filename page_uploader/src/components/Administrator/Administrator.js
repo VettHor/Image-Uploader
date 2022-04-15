@@ -17,7 +17,7 @@ const Administrator = () => {
         setImagesNames((previousNames) => previousNames.concat(imagesNames));
         setSelectedImages((previousImages) => previousImages.concat(imagesArray));
     };
-    
+
     return(
         <div className="container">
             <input 
@@ -37,14 +37,13 @@ const Administrator = () => {
                 {selectedImages && selectedImages.map((image, index) => {
                     return (
                         <figure key={index}>
-                            <div>
-                                <img src={image} alt={imagesNames[index].split('.')[0]}/>
-                                <figcaption>{imagesNames[index]}</figcaption>
-                            </div>
+                            <button className="delete-button btn-close" onClick={() => setSelectedImages(selectedImages.filter((e) => e !== image))}/>
+                            <img src={image} alt={imagesNames[index].split('.')[0]}/>
+                            <figcaption>{imagesNames[index]}</figcaption>
                         </figure>
                     );
                 })}
-            </div>
+            </div> 
         </div>
     );
 }
