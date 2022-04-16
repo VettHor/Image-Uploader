@@ -99,3 +99,13 @@ figcaption {
     color: #181414;
     color: white;
 }
+
+
+.search-input {
+    width: 80%;
+    font-size: 2.5vmin;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    align-items: center;
+}

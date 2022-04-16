@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ImagesController.DBContext
+namespace ImagesController.DBContext.Image
 {
-    public class MyDBRepository
+    public class ImageDBRepository
     {
         public async void AddImage(ImageDB imageDB)
         {
-            using (MyDBContext myDBContext = new MyDBContext())
+            using (ImageDBContext myDBContext = new ImageDBContext())
             {
                 myDBContext.ImageDB.Add(imageDB);
                 await myDBContext.SaveChangesAsync();
@@ -16,7 +16,7 @@ namespace ImagesController.DBContext
         }
         public async void DeleteAllImages()
         {
-            using (MyDBContext myDBContext = new MyDBContext())
+            using (ImageDBContext myDBContext = new ImageDBContext())
             {
                 myDBContext.ImageDB.RemoveRange(myDBContext.ImageDB);
                 await myDBContext.SaveChangesAsync();
@@ -25,9 +25,19 @@ namespace ImagesController.DBContext
 
         public List<ImageDB> GetAllImages()
         {
-            using (MyDBContext myDBContext = new MyDBContext())
+            using (ImageDBContext myDBContext = new ImageDBContext())
             {
                 return myDBContext.ImageDB.ToList();
+            }
+        }
+        public List<ImageDB> GetImagesByWord(string word)
+        {
+            using (ImageDBContext myDBContext = new ImageDBContext())
+            {
+                return myDBContext.ImageDB
+                    .ToList()
+                    .Where(image => image.ImageName.Contains(word, System.StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
         }
     }

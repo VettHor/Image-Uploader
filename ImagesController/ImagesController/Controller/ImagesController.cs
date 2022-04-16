@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using ImagesController.DBContext.Image;
+using ImagesController.DBContext.Administrator;
 
 namespace ImagesController.Controller
 {
@@ -16,27 +18,20 @@ namespace ImagesController.Controller
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        static MyDBRepository myDBRepository = new MyDBRepository();
+        static ImageDBRepository imageDBRepository = new ImageDBRepository();
+        static AdministratorDBRepository administratorDBRepository = new AdministratorDBRepository();
 
         [HttpPost]
         [Route("add_images")]
         public async Task<IActionResult> AddImages([FromForm] FileModel file)
         {
-            //string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", file.FileName);
-            //using(Stream stream = new FileStream(path, FileMode.Create))
-            //{
-            //    file.FormFile.CopyTo(stream);
-            //}
-
-
-
             ImageDB imageDB = new ImageDB();
             using (var memoryStream = new MemoryStream())
             {
                 file.FormFile.CopyTo(memoryStream);
                 imageDB.Image = memoryStream.ToArray();
                 imageDB.ImageName = file.FileName;
-                myDBRepository.AddImage(imageDB);
+                imageDBRepository.AddImage(imageDB);
             }
             return Ok(new
             {
@@ -44,27 +39,40 @@ namespace ImagesController.Controller
                 Status = (int)HttpStatusCode.Created
             });
         }
-    
 
-    [HttpGet]
-    [Route("get_images")]
-    public List<ImageDB> GetAllImages()
-    {
-        return myDBRepository.GetAllImages().Any() is true ? myDBRepository.GetAllImages() : null;
-    }
 
-    //    [HttpDelete]
-    //    [Route("delete_images")]
-    //    public async Task<IActionResult> DeleteAllImages()
-    //    {
-    //        if (myDBRepository.GetAllImages().Any() is not true)
-    //            return NotFound();
-    //        myDBRepository.DeleteAllImages();
-    //        return Ok(new
-    //        {
-    //            Message = "Succesfully deleted images!",
-    //            Status = (int)HttpStatusCode.OK,
-    //        });
-    //    }
+        [HttpGet]
+        [Route("get_images")]
+        public List<ImageDB> GetAllImages()
+        {
+            return imageDBRepository.GetAllImages();
+        }
+
+        [HttpGet]
+        [Route("get_image_by_word/{word}")]
+        public List<ImageDB> GetImagesByWord(string word)
+        {
+            return imageDBRepository.GetImagesByWord(word);
+        }
+
+        [HttpGet]
+        [Route("contains_administrator/{email}/{password}")]
+        public bool GetImagesByWord(string email, string password)
+        {
+            return administratorDBRepository.Contains(email, password);
+        }
+        //    [HttpDelete]
+        //    [Route("delete_images")]
+        //    public async Task<IActionResult> DeleteAllImages()
+        //    {
+        //        if (myDBRepository.GetAllImages().Any() is not true)
+        //            return NotFound();
+        //        myDBRepository.DeleteAllImages();
+        //        return Ok(new
+        //        {
+        //            Message = "Succesfully deleted images!",
+        //            Status = (int)HttpStatusCode.OK,
+        //        });
+        //    }
     }
 }
