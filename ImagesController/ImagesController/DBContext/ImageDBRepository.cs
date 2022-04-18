@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ImagesController.DBContext.Image
+namespace ImagesController.DBContext
 {
     public class ImageDBRepository
     {
@@ -38,6 +38,16 @@ namespace ImagesController.DBContext.Image
                     .ToList()
                     .Where(image => image.ImageName.Contains(word, System.StringComparison.OrdinalIgnoreCase))
                     .ToList();
+            }
+        }
+
+        public bool Contains(string _email, string _password)
+        {
+            using (ImageDBContext myDBContext = new ImageDBContext())
+            {
+                return myDBContext.UserDB.Any(adm =>
+                    adm.Email == _email
+                    && adm.Password == _password);
             }
         }
     }

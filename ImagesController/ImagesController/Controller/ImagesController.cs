@@ -9,8 +9,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using ImagesController.DBContext.Image;
-using ImagesController.DBContext.Administrator;
+using ImagesController.DBContext;
 
 namespace ImagesController.Controller
 {
@@ -19,7 +18,6 @@ namespace ImagesController.Controller
     public class ImagesController : ControllerBase
     {
         static ImageDBRepository imageDBRepository = new ImageDBRepository();
-        static AdministratorDBRepository administratorDBRepository = new AdministratorDBRepository();
 
         [HttpPost]
         [Route("add_images")]
@@ -59,20 +57,21 @@ namespace ImagesController.Controller
         [Route("contains_administrator/{email}/{password}")]
         public bool GetImagesByWord(string email, string password)
         {
-            return administratorDBRepository.Contains(email, password);
+            return imageDBRepository.Contains(email, password);
         }
-        //    [HttpDelete]
-        //    [Route("delete_images")]
-        //    public async Task<IActionResult> DeleteAllImages()
-        //    {
-        //        if (myDBRepository.GetAllImages().Any() is not true)
-        //            return NotFound();
-        //        myDBRepository.DeleteAllImages();
-        //        return Ok(new
-        //        {
-        //            Message = "Succesfully deleted images!",
-        //            Status = (int)HttpStatusCode.OK,
-        //        });
-        //    }
+
+        [HttpDelete]
+        [Route("delete_images")]
+        public async Task<IActionResult> DeleteAllImages()
+        {
+            if (imageDBRepository.GetAllImages().Any() is not true)
+                return NotFound();
+            imageDBRepository.DeleteAllImages();
+            return Ok(new
+            {
+                Message = "Succesfully deleted images!",
+                Status = (int)HttpStatusCode.OK,
+            });
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ImagesController.Models.Entities
 {
-    public class AdministratorDB
+    public class UserDB
     {
         [Required]
         [Key]
@@ -11,5 +11,6 @@ namespace ImagesController.Models.Entities
         public int Id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public bool IsAdministrator { get; set; } = false;
     }
 }
