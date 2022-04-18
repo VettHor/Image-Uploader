@@ -5,11 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json;
 using System.IO;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using ImagesController.DBContext;
 
 namespace ImagesController.Controller
 {
@@ -53,11 +50,39 @@ namespace ImagesController.Controller
             return imageDBRepository.GetImagesByWord(word);
         }
 
-        [HttpGet]
-        [Route("contains_administrator/{email}/{password}")]
-        public bool GetImagesByWord(string email, string password)
+        [HttpPost]
+        [Route("add_user/{state}")]
+        public async Task<IActionResult> AddUser(UserDB user, string state)
         {
-            return imageDBRepository.Contains(email, password);
+            bool alreadyExist = imageDBRepository.Contains(user);
+            if (state == "create") {
+                if (alreadyExist)
+                    return Ok(new
+                    {
+                        Message = "Such user already exists!",
+                        User = user,
+                        Exists = alreadyExist
+                    });
+                imageDBRepository.AddUser(user);
+                return Ok(new
+                {
+                    Message = "Succesfully created a profile!",
+                    User = user,
+                    Exists = alreadyExist
+                });
+            }
+            if(alreadyExist) {
+                return Ok(new {
+                    Message = "Successfully logged in!",
+                    User = imageDBRepository.GetUserByEmailPassword(user),
+                    Exists = alreadyExist
+                });
+            }
+            return Ok(new {
+                Message = "There is no such user, create it!",
+                User = user,
+                Exists = alreadyExist
+            });
         }
 
         [HttpDelete]
@@ -71,6 +96,63 @@ namespace ImagesController.Controller
             {
                 Message = "Succesfully deleted images!",
                 Status = (int)HttpStatusCode.OK,
+            });
+        }
+
+        [Route("delete_image/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            ImageDB image = imageDBRepository.GetImageById(id);
+            if (image is null)
+                return NotFound();
+            imageDBRepository.DeleteImage(image);
+            return Ok(new
+            {
+                Message = "Succesfully deleted an image!",
+                Status = (int)HttpStatusCode.OK,
+            });
+        }
+
+        [HttpDelete]
+        [Route("delete_users")]
+        public async Task<IActionResult> DeleteAllUsers()
+        {
+            if (imageDBRepository.GetAllUsers().Any() is not true)
+                return NotFound();
+            imageDBRepository.DeleteAllUsers();
+            return Ok(new
+            {
+                Message = "Succesfully deleted users!",
+                Status = (int)HttpStatusCode.OK,
+            });
+        }
+
+        [Route("delete_user/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            UserDB player = imageDBRepository.GetUserById(id);
+            if (player is null)
+                return NotFound();
+            imageDBRepository.DeleteUser(player);
+            return Ok(new
+            {
+                Message = "Succesfully deleted a user!",
+                Status = (int)HttpStatusCode.OK,
+            });
+        }
+
+        [HttpPost]
+        [Route("add_user")]
+        public async Task<IActionResult> AddUser(UserDB user)
+        {
+            imageDBRepository.AddUser(user);
+            return Ok(new
+            {
+                Message = "Succesfully added new user!",
+                Status = (int)HttpStatusCode.Created,
+                Player = user
             });
         }
     }

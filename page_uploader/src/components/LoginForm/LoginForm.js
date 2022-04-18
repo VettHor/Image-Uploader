@@ -4,15 +4,33 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
 
 const LoginForm = () => {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [isLogin, setLogin] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
     const changePage = (event) => {
         event.preventDefault();
-        fetch(`https://localhost:44309/api/Images/contains_administrator/${email}/${password}`)
+        fetch(`https://localhost:44309/api/Images/add_user/${isLogin ? 'login' : 'create'}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                email: email,
+                password: password
+            })
+        })
         .then(res => res.json())
-        .then(json => navigate(`/${json ? 'administrator' : 'user'}`));
+        .then(json => {
+            alert(json.Message);
+            if(isLogin === true)
+            {
+                if(json.Exists)
+                    navigate(`/${json.User.IsAdministrator ? 'administrator' : 'user'}`);
+            }
+            else
+                if(json.Exists === false)
+                    navigate('/user');
+        });
     }
 
     return (
@@ -25,7 +43,10 @@ const LoginForm = () => {
                     </div>
                 </div>
                 <form onSubmit={changePage} className="mt-3">
-                    <h1>User authorization</h1>
+                    {isLogin
+                        ? <h1>User authorization</h1>
+                        : <h1>Create account</h1>
+                    }
                     <div className="mt-4">
                         <input 
                             type="email" 
@@ -43,12 +64,17 @@ const LoginForm = () => {
                             placeholder="Password" 
                             className="name"
                             onChange={event => setPassword(event.target.value)}
+                            autoComplete="on"
                             required
                         />
                     </div>
-                    <div className="login-button mt-1 mb-5">
-                        <input type="submit" value="Login"/>
+                    <div className="login-button mt-1 mb-3">
+                        <input type="submit" value={isLogin ? "Login" : "Create"}/>
                     </div>
+                    {isLogin 
+                        ? <p className="lg-in-create">Don't have an account? <a href='#' onClick={() => setLogin(false)}>Create</a></p>
+                        : <p className="lg-in-create">Have an account? <a href='#' onClick={() => setLogin(true)}>Log in</a></p>
+                    }
                 </form>
             </div>
         </div>

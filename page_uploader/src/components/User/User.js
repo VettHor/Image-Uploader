@@ -1,122 +1,7 @@
-// import React, { useState } from 'react'
-// import './User.css'
-
-// const Administrator = () => {
-//     const [selectedImages, setSelectedImages] = useState([]);
-//     const [imagesNames, setImagesNames] = useState([]);
-//     const [bytesImages, setBytesImages] = useState([]);
-
-//     const getFromDataBase = () => {
-//         fetch("https://localhost:44309/api/Images/get_images")
-//         .then(res => res.json())
-//         .then(json => {
-//             let oImagesNames = [];
-//             let oImages = [];
-//             let oImagesBytes = [];
-//             for(var i = 0; i < json.length; ++i) {
-//                 oImagesNames.push(json[i].ImageName);
-//                 oImages.push(`data:image/${oImagesNames[i].split('.')[1]};base64,${json[i].Image}`);
-//                 oImagesBytes.push(json[i].Image);
-//             }
-//             setSelectedImages(oImages);
-//             setImagesNames(oImagesNames);
-//             setBytesImages(oImagesBytes);
-//         });
-//     }
-
-//     const searchImages = (event) => {
-//         if(event.key === 'Enter') {
-//             searchImagesRequest(event.target.value);
-//         }
-//     }
-
-//     const searchImagesRequest = (word) => {
-//         if(word !== "") {
-//             fetch(`https://localhost:44309/api/Images/get_image_by_word/${word}`)
-//             .then(res => res.json())
-//             .then(json => {
-//                 let oImagesNames = [];
-//                 let oImages = [];
-//                 for(var i = 0; i < json.length; ++i) {
-//                     oImagesNames.push(json[i].ImageName);
-//                     oImages.push(`data:image/${oImagesNames[i].split('.')[1]};base64,${json[i].Image}`);
-//                 }
-//                 setSelectedImages(oImages);
-//                 setImagesNames(oImagesNames);
-//             });
-//         }
-//     }
-
-//     const downloadImage = (name, image) => {
-//         const link = document.createElement('a');
-//         link.href = window.URL.createObjectURL(
-//             new Blob(
-//                 [new Blob([base64ToArrayBuffer(image)], {type: `application/${name.split('.')[1]}`})]
-//             )
-//         );
-//         link.setAttribute('download', name);
-//         document.body.appendChild(link);
-//         link.click();
-//         link.parentNode.removeChild(link);
-//     }
-
-//     const base64ToArrayBuffer = (base64) => {
-//         var binaryString = window.atob(base64);
-//         var binaryLen = binaryString.length;
-//         var bytes = new Uint8Array(binaryLen);
-//         for (var i = 0; i < binaryLen; i++) {
-//            var ascii = binaryString.charCodeAt(i);
-//            bytes[i] = ascii;
-//         }
-//         return bytes;
-//     }
-
-//     return(
-//         <div className="container">
-//             <input 
-//                 type="button" 
-//                 id="data-output" 
-//                 onClick={getFromDataBase}
-//             />
-//             <label htmlFor="data-output">
-//                 <i className="fa fa-upload"/>
-//                 &nbsp; Open All photos
-//             </label>
-//             <div className="card-body p-2 mt-3">
-//                 <div className="d-flex flex-row justify-content-center">
-//                     <input className="search-input" type="search" id="search-input" placeholder="Search images" onKeyDown={searchImages}></input>
-//                     <button className="search-btn" onClick={() => searchImagesRequest(document.getElementById("search-input").value)}>
-//                         <i className="fas fa-search" aria-hidden="true"/>
-//                     </button>
-//                 </div>
-//             </div>
-//             <p id="num-of-files">Found files : {selectedImages.length}</p>
-//             <div className="images-container">
-//                 {selectedImages && selectedImages.map((image, index) => {
-//                     return (
-//                         <figure key={index} className="user-btn">
-//                             <button 
-//                                 type="submit" 
-//                                 className="btn-close" 
-//                                 onClick={() => downloadImage(imagesNames[index], bytesImages[index])}
-//                             />
-//                             <img src={image} alt={imagesNames[index]}/>
-//                             <figcaption>
-//                                 {imagesNames[index]}
-//                             </figcaption>
-//                         </figure>
-//                     );
-//                 })}
-//             </div> 
-//         </div>
-//     );
-// }
-
-// export default Administrator;
-
 import React, { useState } from 'react'
 import { saveAs } from 'file-saver'
 import './User.css'
+import Logout from '../Logout/Logout'
 
 const Administrator = () => {
     const [toogle, setToogleState] = useState(true);
@@ -183,7 +68,8 @@ const Administrator = () => {
         searchInputButton(document.getElementById("search-input").value);
     }
 
-    return(
+    return(<>
+        <Logout/>
         <div className="container">
             <input 
                 type="button" 
@@ -192,11 +78,11 @@ const Administrator = () => {
             />
             <label htmlFor="data-output">
                 <i className="fa fa-upload"/>
-                &nbsp; Open All photos
+                &nbsp; Open all photos from database 
             </label>
             <div className="card-body p-2 mt-3">
                 <div className="d-flex flex-row justify-content-center">
-                    <input className="search-input" type="search" id="search-input" placeholder="Search images" onKeyDown={searchKeyDown}></input>
+                    <input className="search-input" type="search" id="search-input" placeholder={toogle ? "Search images in pixabay" : "Search images in database"} onKeyDown={searchKeyDown}></input>
                     <button className="search-btn" onClick={() => searchInputButton(document.getElementById("search-input").value)}>
                         <i className="fas fa-search" aria-hidden="true"/>
                     </button>
@@ -249,7 +135,7 @@ const Administrator = () => {
                 }
             </div> 
         </div>
-    );
+    </>);
 }
 
 export default Administrator;

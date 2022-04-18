@@ -1,7 +1,6 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-
 import Administrator from './components/Administrator/Administrator'
 import User from './components/User/User'
 import LoginForm from './components/LoginForm/LoginForm'
